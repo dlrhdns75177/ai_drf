@@ -1,10 +1,10 @@
-#데이터를 원하는 형태로 만들기 위해서 (직렬화)
-
+#데이터를 원하는 형태로 만들기 위해서(직렬화) + 커스텀 
 from rest_framework import serializers #rest에서 제공하는 직렬화(유연함)
 from .models import Article
 
 
-class ArticleSerializer(serializers.ModelSerializer): #forms.py랑 같은 형태
+class ArticleSerializer(serializers.ModelSerializer): 
+    #forms.py랑 같은 형태(원래 장고에서는 템플릿도 고려해야하니까 모델폼을 사용했지만! 여기에서는 serializers를 사용)
     class Meta:
         model = Article
         fields = "__all__"
