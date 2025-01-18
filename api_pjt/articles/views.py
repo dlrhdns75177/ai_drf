@@ -7,6 +7,7 @@ from .models import Article
 from .serializers import ArticleSerializer
 from django.shortcuts import get_object_or_404 #client가 없는 pk에 접근했을 때 404에러 보여줌
 from rest_framework import status #다양한 status code 제공 우리가 직접 201 혹은 200 이렇게 적을 필요 없음음
+from rest_framework.views import APIView #클래스 view로 바꾸기 위해서 상속 받아야함(다른 것들도 있음)
 
 #def article_list_html(request):
 #    articles = Article.objects.all()
@@ -53,6 +54,7 @@ safe = False : 기본적으로 json은 딕셔너리 형태를 반환하는데 �
 #    serializer = ArticleSerializer(articles, many=True) #단일 객체면 many 작성하지 않아도 됨됨
 #    return Response(serializer.data) #json의 형태로 담긴 데이터를 반환하겠다
 
+#클래스 사용하지 않고 구현
 @api_view(['GET','POST']) #꼭 필요한 부분
 def article_list(request):
     if request.method == "GET": #조회만 할거면
@@ -63,10 +65,29 @@ def article_list(request):
     elif request.method == "POST": #새로운 글 생성 할거면면
         #print(request.data) #터미널에서 print문 확인할 수 있음
         serializer = ArticleSerializer(data=request.data) #새로운 데이터 넣은 객체 생성
+        '''
+        request.data 를 하는 이유는 여러 http요청 방법을 처리하기 위함(post, put, patch)
+        data= 라고 명시를 하는 이유는 명시하지 않으면 instance(기존의 데이터)를 직렬화하게된다.
+        명시해야만 새롭게 post를 통해서 받은 데이터를 직렬화하는 것
+        '''
         if serializer.is_valid(raise_exception=True): #drf에서 제공하는 직렬화는 장고에서의 modelform과 비슷한 역할할
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED) #만약에 성공을 했다면 201표시해
         #return Response(serializer.errors, status=400) #raise_exception=True를 하게 되면 is_valid()하지 않을 때 에러발생시킴킴
+
+
+class ArticleListAPIView(APIView): #클래스 형태로 만들고 싶어서
+    def get(request): #각 기능을 함수로 만들었음
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data)
+        
+    def post(request):
+        serializer = ArticleSerializer(data=request.data) #데이터 불러옴(request.data -> 모든 유형의 http 데이터 요청을 처리할 수 있음)
+        if serializer.is_valid(raise_exception=True): 
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED) 
+
 
 
 @api_view(["GET",'PUT', "DELETE"]) 
@@ -84,5 +105,29 @@ def article_detail(request, pk):
             return Response(serializer.data)
 
     elif request.method == "DELETE":
+        article.delete()
+        return Response(status=status.HTTP_200_OK)
+    
+
+class ArticleDetailAPIView(APIView):
+    
+    def get_object(self,pk):
+        return get_object_or_404(Article, pk=pk)
+
+    def get(self,request,pk):
+        article = self.get_object(pk)
+        serializer = ArticleSerializer(article) #pk 하나만 가져오니까 many 필요 없음
+        return Response(serializer.data)
+    
+    def put(self,request,pk):
+        article = self.get_object(pk)
+        serializer = ArticleSerializer(article, data=request.data, partial =True) #장고의 modelform이랑 형태가 비슷 기존의 데이터에 업데이트를 하는 것
+        #partial = True는 부분적으로 수정해도 괜찮다는 것
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        
+    def delete(self,request,pk):
+        article = self.get_object(pk)
         article.delete()
         return Response(status=status.HTTP_200_OK)
