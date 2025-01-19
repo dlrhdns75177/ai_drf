@@ -8,4 +8,6 @@ urlpatterns = [
     #path("json-drf/",views.json_drf,name="json_drf"),
     path("",views.ArticleListAPIView.as_view(),name="articles_list"),
     path("<int:pk>/",views.ArticleDetailAPIView.as_view(),name="article_detail"),
+    path("<int:article_pk>/comments/",views.ArticleCommentListAPIView.as_view(),name="comment_list"),
+    path("comments/<int:comment_pk>/",views.CommentDetailAPIView.as_view(),name="comment_detail"),
 ]
