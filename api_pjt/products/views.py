@@ -13,6 +13,8 @@ def product_list(request):
         products = Product.objects.all()
         serializers = ProductSerializer(products, many=True)
         json_response = serializers.data #현재 json 형태(딕셔너리)로 되어 있으니까
-        cache.set(cache_key,json_response,5) #앞에가 key 뒤에 value (이제 cache에 값이 존재)
+        cache.set(cache_key,json_response,180) #앞에가 key 뒤에 value (이제 cache에 값이 존재) 마지막은 캐시에 몇초동안 데이터 존재할지
     response_date = cache.get(cache_key) #근데 cache에 저장된 데이터가 있으면 get으로 가져오면 됨
     return Response(response_date)
+
+
