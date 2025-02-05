@@ -186,3 +186,26 @@ class CommentDetailAPIView(APIView):
         comment.delete()
         data = {f"{comment_pk}는삭제됨"}
         return Response(data, status=status.HTTP_204_NO_CONTENT) #값이 아무것도 없어도 되지만 성공 했을 때 어떤 status code를 보여줄 것인가
+
+#silk 사용하기 전
+#@api_view(["GET"])
+#def CheckSQL(request):
+#    from django.db import connection #실제로 실행된 sql 쿼리를 확인
+
+#    articles = Article.objects.all().prefetch_related('comment')
+#    for article in articles: #쿼리 시작 o
+#        comments = article.comment.all() #추가 쿼리 시작x
+#        for comment in comments: #추가 쿼리 시작 o(코드 상으로만 내부에서는 추가 쿼리 발생 ㄴㄴ)
+#            print(comment.content)
+
+#    print("-"*30)
+#    print(connection.queries) #db로 보내는 쿼리
+#    return Response()
+
+@api_view(['GET'])
+def CheckSQL(request):
+    comments = Comment.objects.all().prefetch_related('article')
+    for comment in comments:
+        print(comment.article.title)
+
+    return Response()

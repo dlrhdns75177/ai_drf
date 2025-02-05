@@ -10,4 +10,5 @@ urlpatterns = [
     path("<int:pk>/",views.ArticleDetailAPIView.as_view(),name="article_detail"),
     path("<int:article_pk>/comments/",views.ArticleCommentListAPIView.as_view(),name="comment_list"),
     path("comments/<int:comment_pk>/",views.CommentDetailAPIView.as_view(),name="comment_detail"),
+    path('check-sql/',views.CheckSQL,name="check_sql"),
 ]

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django_seed",
     "rest_framework",
     'rest_framework_simplejwt.token_blacklist',
+    'silk',
     #local app
     "articles",
     "accounts",
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "silk.middleware.SilkyMiddleware",
 ]
 
 ROOT_URLCONF = "api_pjt.urls"
